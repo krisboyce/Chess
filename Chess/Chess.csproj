@@ -51,6 +51,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Logic\Logic.csproj">
+      <Project>{F64ABA17-B81A-4549-AB09-E95268BE4BE4}</Project>
+      <Name>Logic</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Model\Model.csproj">
       <Project>{81B1648A-E4E0-4A56-A4D9-60510EC5D97B}</Project>
       <Name>Model</Name>

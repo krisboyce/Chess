@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Board.cs" />
     <Compile Include="Constants\BoardProperties.cs" />
+    <Compile Include="Constants\HelpStrings.cs" />
     <Compile Include="Constants\PeiceProperties.cs" />
     <Compile Include="Constants\TurnProperties.cs" />
     <Compile Include="Peice.cs" />

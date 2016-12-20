@@ -12,6 +12,7 @@ namespace Model.Constants
         Quit,
         Move,
         Save,
-        Load
+        Load,
+        Play
     }
 }

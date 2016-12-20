@@ -1,7 +1,9 @@
-﻿using Model;
+﻿using Logic;
+using Model;
 using Model.Constants;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -9,15 +11,59 @@ using System.Threading.Tasks;
 
 namespace Chess
 {
-    class Program
+    public class Program
     {
-        private static bool GameRunning = true;
+        private static bool GameRunning = false;
+        private static bool InMenu = true;
         private static Player PlayerOne { get; set; }
         private static Player PlayerTwo { get; set; }
         private static Side PlayerTurn = Side.White;
+
         static void Main(string[] args)
         {
-            SetupPlayers();
+            Console.WriteLine("Welcome to Console Chess. Type help to begin.");
+            while (InMenu)
+            {
+                var command = Console.ReadLine();
+                var gameCommand = TurnLogic.GetCommand(null, command);
+                if(gameCommand != null)
+                {
+                    if(gameCommand.Type.Equals(TurnType.Move) || gameCommand.Type.Equals(TurnType.Save))
+                    {
+                        Console.WriteLine("Invalid Command. Type help for more options.");
+                    }else
+                    {
+                        var cmdPrompt = TurnLogic.ExecuteCommand(gameCommand);
+                        if (!gameCommand.Type.Equals(TurnType.Load))
+                            Console.WriteLine(cmdPrompt);
+
+                        if (cmdPrompt.Contains("Invalid"))
+                            continue;
+
+                        switch (gameCommand.Type)
+                        {
+                            case TurnType.Play:
+                                InMenu = false;
+                                GameRunning = true;
+                                SetupPlayers();
+                                break;
+                            case TurnType.Quit:
+                                InMenu = false;
+                                break;
+                            case TurnType.Load:
+                                InMenu = false;
+                                LoadGame(TurnLogic.ExecuteCommand(gameCommand));
+                                break;
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Unrecognized Command. Type help for more options.");
+                }
+
+            }
+            Console.Clear();
             while (GameRunning)
             {
                 GameLoop();
@@ -78,9 +124,18 @@ namespace Chess
             Graphics.Display();
             var ActivePlayer = PlayerOne.Side == PlayerTurn ? PlayerOne : PlayerTwo;
             Console.WriteLine($"{ActivePlayer.Name}, It is your move.");
-            Console.ReadLine();
+            var turnCommand = Console.ReadLine();
+            TurnCommand command = TurnLogic.GetCommand(ActivePlayer, turnCommand);
+            if (command != null)
+                TurnLogic.ExecuteCommand(command);
+            else
+                TurnLogic.ExecuteCommand(new TurnCommand() { });
+            PlayerTurn = PlayerTurn.Equals(Side.White) ? Side.Black : Side.White;
+        }
 
-            PlayerTurn = PlayerTurn == Side.White ? Side.Black : Side.White;
+        private static void LoadGame(string fileName)
+        {
+
         }
     }
 }

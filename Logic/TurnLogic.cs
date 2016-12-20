@@ -14,8 +14,7 @@ namespace Logic
         {
             var command = ParseCommandString(commandString);
             command.player = player;
-            var valid = command.ValidateArguments();
-            return valid ? command : null;
+            return command;
         }
 
         private static TurnCommand ParseCommandString(string commandString)
@@ -44,31 +43,79 @@ namespace Logic
                 case "l":
                     command.Type = TurnType.Load;
                     break;
-                default:
-                    command.Type = TurnType.Help;
+                case "play":
+                case "p":
+                    command.Type = TurnType.Play;
                     break;
+                default:
+                    return null;
             }
             return command;
         }
         
         private static bool ValidateArguments(this TurnCommand command)
         {
-
-            return false;
-        }
-
-        public static bool ExecuteCommand(TurnCommand command)
-        {
             switch (command.Type)
             {
-
+                case TurnType.Help:
+                    return command.Arguments.Count == 1 || command.Arguments.Count == 0;
+                case TurnType.Move:
+                    return false;
+                case TurnType.Play:
+                    return command.Arguments.Count == 0;
+                case TurnType.Quit:
+                    return command.Arguments.Count == 0;
+                case TurnType.Save:
+                    return command.Arguments.Count == 1;
+                case TurnType.Load:
+                    return command.Arguments.Count == 1;
+                default:
+                    return false;
             }
-            return false;
         }
 
-        public static void HelpAction(string command)
+        public static string ExecuteCommand(TurnCommand command)
         {
+            if(!command.ValidateArguments())
+                return "Invalid arguments for command: " + command.Type.ToString() + "\n" + HelpAction(command.Type.ToString());
 
+            switch (command.Type)
+            {
+                case TurnType.Help:
+                    return HelpAction();
+                case TurnType.Play:
+                    return "Beginning Game...";
+                case TurnType.Quit:
+                    return "Quitting Game...";
+                default:
+                    return HelpAction();
+            }
+        }
+
+        public static string HelpAction(string command = "")
+        {
+            switch (command.ToLower())
+            {
+                case "help":
+                case "h":
+                    return HelpStrings.HELP;
+                case "move":
+                case "m":
+                    return HelpStrings.MOVE;
+                case "quit":
+                case "q":
+                    return HelpStrings.QUIT;
+                case "play":
+                    return HelpStrings.PLAY;
+                case "save":
+                case "s":
+                    return HelpStrings.SAVE;
+                case "load":
+                case "l":
+                    return HelpStrings.LOAD;
+                default:
+                    return HelpStrings.HELP;
+            }
         }
     }
 }
