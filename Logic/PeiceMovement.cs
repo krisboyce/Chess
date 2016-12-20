@@ -17,7 +17,7 @@ namespace Logic
 
         private static bool PawnCanMove(Peice peice, int dX, int dY)
         {
-            var board = Board.getInstance();
+            var board = Board.GetInstance();
             var validMove = false;
             if (peice.Type != PeiceType.Pawn)
                 return false;

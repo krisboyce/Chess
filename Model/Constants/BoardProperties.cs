@@ -11,4 +11,8 @@ namespace Model.Constants
         White,
         Black
     }
+    public static class Letters
+    {
+        public const string Coords = "ABCDEFGH";
+    }
 }

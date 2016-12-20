@@ -13,6 +13,9 @@ namespace Logic
         public static TurnCommand GetCommand(Player player, string commandString)
         {
             var command = ParseCommandString(commandString);
+            if (command == null)
+                return null;
+
             command.player = player;
             return command;
         }
