@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6B8AE814-C6F0-4696-AB09-30C15FAFCBEA}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{F64ABA17-B81A-4549-AB09-E95268BE4BE4}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Chess</RootNamespace>
-    <AssemblyName>Chess</AssemblyName>
+    <RootNamespace>Logic</RootNamespace>
+    <AssemblyName>Logic</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -43,19 +40,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Display.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="PeiceMovement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TurnLogic.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Logic\Logic.csproj">
-      <Project>{f64aba17-b81a-4549-ab09-e95268be4be4}</Project>
-      <Name>Logic</Name>
-    </ProjectReference>
-    <ProjectReference Include="Model\Model.csproj">
+    <ProjectReference Include="..\Model\Model.csproj">
       <Project>{81b1648a-e4e0-4a56-a4d9-60510ec5d97b}</Project>
       <Name>Model</Name>
     </ProjectReference>
