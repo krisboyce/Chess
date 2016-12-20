@@ -31,8 +31,14 @@ namespace Chess
             var playerOneSide = 3;
             while (playerOneSide > 2 && playerOneSide > 0)
             {
-                Console.WriteLine("Choose your side. \n    1. White\n    2. Black");
-                playerOneSide = Convert.ToInt32(Console.ReadLine());
+                Console.Clear();
+                Console.WriteLine("Please choose your side. \n    1. White\n    2. Black");
+                try
+                {
+                    playerOneSide = Convert.ToInt32(Console.ReadLine());
+                }
+                catch(FormatException e)
+                {}
             }
 
             Player playerOne = new Player()
@@ -42,9 +48,12 @@ namespace Chess
             };
 
             Console.WriteLine($"You have chosen to be the {playerOne.Side.ToString()} side.");
+            Thread.Sleep(1250);
 
+            Console.Clear();
             Console.WriteLine("Player Two, enter your name: ");
             var playerTwoName = Console.ReadLine();
+
             Player playerTwo = new Player()
             {
                 Name = playerTwoName,

@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6B8AE814-C6F0-4696-AB09-30C15FAFCBEA}</ProjectGuid>
+    <ProjectGuid>{CC6FA238-7D9C-4A88-999C-5A3D036E503D}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Chess</RootNamespace>
@@ -51,12 +51,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Logic\Logic.csproj">
-      <Project>{f64aba17-b81a-4549-ab09-e95268be4be4}</Project>
-      <Name>Logic</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Model\Model.csproj">
-      <Project>{81b1648a-e4e0-4a56-a4d9-60510ec5d97b}</Project>
+      <Project>{81B1648A-E4E0-4A56-A4D9-60510EC5D97B}</Project>
       <Name>Model</Name>
     </ProjectReference>
   </ItemGroup>
