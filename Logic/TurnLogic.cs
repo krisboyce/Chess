@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Logic.Command;
 
 namespace Logic
 {
@@ -16,7 +17,7 @@ namespace Logic
             if (command == null)
                 return null;
 
-            command.player = player;
+            command.Player = player;
             return command;
         }
 
@@ -53,9 +54,14 @@ namespace Logic
                 default:
                     return null;
             }
+            command.PopulateArguments(commandComponents.Skip(1).ToList());
             return command;
         }
-        
+
+        private static void PopulateArguments(this TurnCommand command, List<string> args)
+        {
+            args.AddRange(args);
+        }
         private static bool ValidateArguments(this TurnCommand command)
         {
             switch (command.Type)
@@ -63,7 +69,7 @@ namespace Logic
                 case TurnType.Help:
                     return command.Arguments.Count == 1 || command.Arguments.Count == 0;
                 case TurnType.Move:
-                    return false;
+                    return command.Arguments.Count > 1;
                 case TurnType.Play:
                     return command.Arguments.Count == 0;
                 case TurnType.Quit:
@@ -80,44 +86,20 @@ namespace Logic
         public static string ExecuteCommand(TurnCommand command)
         {
             if(!command.ValidateArguments())
-                return "Invalid arguments for command: " + command.Type.ToString() + "\n" + HelpAction(command.Type.ToString());
+                return "Invalid arguments for command: " + command.Type.ToString() + "\n" + HelpLogic.Action(command.Type.ToString());
 
             switch (command.Type)
             {
                 case TurnType.Help:
-                    return HelpAction();
+                    return HelpLogic.Action();
                 case TurnType.Play:
                     return "Beginning Game...";
                 case TurnType.Quit:
                     return "Quitting Game...";
+                case TurnType.Move:
+                    return MoveLogic.Action(MoveLogic.ParseMove(command.Arguments));
                 default:
-                    return HelpAction();
-            }
-        }
-
-        public static string HelpAction(string command = "")
-        {
-            switch (command.ToLower())
-            {
-                case "help":
-                case "h":
-                    return HelpStrings.HELP;
-                case "move":
-                case "m":
-                    return HelpStrings.MOVE;
-                case "quit":
-                case "q":
-                    return HelpStrings.QUIT;
-                case "play":
-                    return HelpStrings.PLAY;
-                case "save":
-                case "s":
-                    return HelpStrings.SAVE;
-                case "load":
-                case "l":
-                    return HelpStrings.LOAD;
-                default:
-                    return HelpStrings.HELP;
+                    return HelpLogic.Action();
             }
         }
     }

@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Command\HelpLogic.cs" />
+    <Compile Include="Command\MoveLogic.cs" />
     <Compile Include="PeiceMovement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TurnLogic.cs" />

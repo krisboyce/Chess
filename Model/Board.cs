@@ -12,7 +12,7 @@ namespace Model
 
         private static volatile Board _instance;
         private static object _lock = new object();
-        private static Peice[][] _grid;
+        private Peice[][] _grid;
         public Side Top = Side.Black;
         public Side Bottom =Side.White;
         private Board()
@@ -68,8 +68,10 @@ namespace Model
                         Y = y,
                         Side = y > 2 ? Bottom : Top
                     };
-                    if (y == 1)
-                        y = 5;
+                    if (y > 1 && y < 5)
+                    {
+                        _grid[x][y] = null;
+                    }
                 }
             }
         }
@@ -85,7 +87,11 @@ namespace Model
 
         public Peice GetPeice(int x, int y)
         {
-            return _grid[x][y];
+            var peice = _grid[x][y];
+            if (peice == null) return peice;
+            peice.X = x;
+            peice.Y = y;
+            return peice;
         }
 
         public void MovePeice(int x1, int y1, int x2, int y2)

@@ -21,39 +21,39 @@ namespace Logic
             var validMove = false;
             if (peice.Type != PeiceType.Pawn)
                 return false;
+
             validMove = (peice.Side == board.Top && dY < 0) || (peice.Side == board.Bottom && dY > 0);
 
             if (!validMove)
-                return validMove;
+                return false;
 
-            if(dX != 0)
+            if (dX == 0)
+                return true;
+
+            var capturePeice = board.GetPeice(peice.X + dX, peice.Y + dY);
+            var enPassantPeice = board.GetPeice(peice.X + dX, peice.Y);
+
+            
+
+            if (capturePeice != null)
+                return true;
+
+            if (enPassantPeice?.Type != PeiceType.Pawn)
+                return false;
+
+            if (peice.Type == enPassantPeice.Type)
+                return false;
+
+            if (!enPassantPeice.HasMoved)
+                return false;
+
+            if(enPassantPeice.Side == board.Top && enPassantPeice.Y == 3) {
+                return true;
+            }else if(enPassantPeice.Side == board.Bottom && enPassantPeice.Y == 4)
             {
-                Peice capturePeice = board.GetPeice(peice.X + dX, peice.Y + dY);
-                if (peice != null)
-                {
-                    if (peice.Side != capturePeice.Side)
-                        return true;
-                    else
-                        return false;
-                }
-
-                Peice enPassantPeice = board.GetPeice(peice.X + dX, peice.Y);
-                if (enPassantPeice.Type != PeiceType.Pawn)
-                    return false;
-
-                if (peice.Type == enPassantPeice.Type)
-                    return false;
-
-                if (!enPassantPeice.HasMoved)
-                    return false;
-
-                if(enPassantPeice.Side == board.Top && enPassantPeice.Y == 3) {
-                    return true;
-                }else if(enPassantPeice.Side == board.Bottom && enPassantPeice.Y == 4)
-                {
-                    return true;
-                }
+                return true;
             }
+            
             return false;
         }
     }

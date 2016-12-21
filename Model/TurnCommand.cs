@@ -9,8 +9,13 @@ namespace Model
 {
     public class TurnCommand
     {
-        public Player player { get; set; }
+        public Player Player { get; set; }
         public TurnType Type { get; set; }
-        public Dictionary<string, object> Arguments = new Dictionary<string, object>();
+        public List<string> Arguments;
+
+        public TurnCommand()
+        {
+            Arguments = new List<string>();
+        }
     }
 }
