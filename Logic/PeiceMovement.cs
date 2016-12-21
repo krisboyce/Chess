@@ -1,4 +1,5 @@
-﻿using Model;
+﻿using Logic.PeiceLogic;
+using Model;
 using Model.Constants;
 
 namespace Logic
@@ -10,50 +11,24 @@ namespace Logic
             switch (peice.Type)
             {
                 case PeiceType.Pawn:
-                    return PawnCanMove(peice, dX, dY);
+                    return Pawn.CanMove(peice, dX, dY);
+                case PeiceType.Castle:
+                    return Castle.CanMove(peice, dX, dY);
+                case PeiceType.Knight:
+                    return false;
+                case PeiceType.Bishop:
+                    return false;
+                case PeiceType.Queen:
+                    return false;
+                case PeiceType.King:
+                    return false;
+                default:
+                    return false;
             }
-            return false;
         }
 
-        private static bool PawnCanMove(Peice peice, int dX, int dY)
+        public static bool IsChecked(Peice peice)
         {
-            var board = Board.GetInstance();
-            var validMove = false;
-            if (peice.Type != PeiceType.Pawn)
-                return false;
-
-            validMove = (peice.Side == board.Top && dY < 0) || (peice.Side == board.Bottom && dY > 0);
-
-            if (!validMove)
-                return false;
-
-            if (dX == 0)
-                return true;
-
-            var capturePeice = board.GetPeice(peice.X + dX, peice.Y + dY);
-            var enPassantPeice = board.GetPeice(peice.X + dX, peice.Y);
-
-            
-
-            if (capturePeice != null)
-                return true;
-
-            if (enPassantPeice?.Type != PeiceType.Pawn)
-                return false;
-
-            if (peice.Type == enPassantPeice.Type)
-                return false;
-
-            if (!enPassantPeice.HasMoved)
-                return false;
-
-            if(enPassantPeice.Side == board.Top && enPassantPeice.Y == 3) {
-                return true;
-            }else if(enPassantPeice.Side == board.Bottom && enPassantPeice.Y == 4)
-            {
-                return true;
-            }
-            
             return false;
         }
     }

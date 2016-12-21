@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Logic.Command
 {
-    public static class HelpLogic
+    public static class Help
     {
         public static string Action(string command = "")
         {

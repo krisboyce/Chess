@@ -9,7 +9,7 @@ using Logic.Command;
 
 namespace Logic
 {
-    public static class TurnLogic
+    public static class Turn
     {
         public static TurnCommand GetCommand(Player player, string commandString)
         {
@@ -60,7 +60,7 @@ namespace Logic
 
         private static void PopulateArguments(this TurnCommand command, List<string> args)
         {
-            args.AddRange(args);
+            command.Arguments.AddRange(args);
         }
         private static bool ValidateArguments(this TurnCommand command)
         {
@@ -86,20 +86,24 @@ namespace Logic
         public static string ExecuteCommand(TurnCommand command)
         {
             if(!command.ValidateArguments())
-                return "Invalid arguments for command: " + command.Type.ToString() + "\n" + HelpLogic.Action(command.Type.ToString());
+                return "Invalid arguments for command: " + command.Type.ToString() + "\n" + Help.Action(command.Type.ToString());
 
             switch (command.Type)
             {
                 case TurnType.Help:
-                    return HelpLogic.Action();
+                    return Help.Action();
                 case TurnType.Play:
                     return "Beginning Game...";
                 case TurnType.Quit:
                     return "Quitting Game...";
                 case TurnType.Move:
-                    return MoveLogic.Action(MoveLogic.ParseMove(command.Arguments));
+                    var moveCoords = Move.ParseMove(command.Arguments[0], command.Arguments[1]);
+                    if (moveCoords == null)
+                        return "Invalid Move";
+
+                    return Move.Action(moveCoords[0], moveCoords[1], moveCoords[2], moveCoords[3]);
                 default:
-                    return HelpLogic.Action();
+                    return Help.Action();
             }
         }
     }

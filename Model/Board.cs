@@ -68,7 +68,7 @@ namespace Model
                         Y = y,
                         Side = y > 2 ? Bottom : Top
                     };
-                    if (y > 1 && y < 5)
+                    if (y > 1 && y < 6)
                     {
                         _grid[x][y] = null;
                     }
@@ -94,12 +94,28 @@ namespace Model
             return peice;
         }
 
-        public void MovePeice(int x1, int y1, int x2, int y2)
+        public Peice MovePeice(int x1, int y1, int x2, int y2)
         {
             var peice = GetPeice(x1, y1);
             _grid[x2][y2] = peice;
             _grid[x2][y2].HasMoved = true;
             _grid[x1][y1] = null;
+
+            return _grid[x2][y2];
+        }
+
+        public Peice GetKing(Side side)
+        {
+            for(var y = 0; y<_grid.Length; y++)
+            {
+                for(var x = 0; x<_grid[y].Length; x++)
+                {
+                    var peice = GetPeice(x, y);
+                    if (peice.Side.Equals(side) && peice.Type.Equals(PeiceType.King))
+                        return peice;
+                }
+            }
+            throw new Exception("King not found");
         }
     }
 }

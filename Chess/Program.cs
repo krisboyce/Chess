@@ -18,14 +18,14 @@ namespace Chess
         private static Player PlayerOne { get; set; }
         private static Player PlayerTwo { get; set; }
         private static Side PlayerTurn = Side.White;
-
+        private static string LastTurnResult = "";
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome to Console Chess. Type help to begin.");
             while (InMenu)
             {
                 var command = Console.ReadLine();
-                var gameCommand = TurnLogic.GetCommand(null, command);
+                var gameCommand = Turn.GetCommand(null, command);
                 if(gameCommand != null)
                 {
                     if(gameCommand.Type.Equals(TurnType.Move) || gameCommand.Type.Equals(TurnType.Save))
@@ -33,7 +33,7 @@ namespace Chess
                         Console.WriteLine("Invalid Command. Type help for more options.");
                     }else
                     {
-                        var cmdPrompt = TurnLogic.ExecuteCommand(gameCommand);
+                        var cmdPrompt = Turn.ExecuteCommand(gameCommand);
                         if (!gameCommand.Type.Equals(TurnType.Load))
                             Console.WriteLine(cmdPrompt);
 
@@ -52,7 +52,7 @@ namespace Chess
                                 break;
                             case TurnType.Load:
                                 InMenu = false;
-                                LoadGame(TurnLogic.ExecuteCommand(gameCommand));
+                                LoadGame(Turn.ExecuteCommand(gameCommand));
                                 break;
                         }
                     }
@@ -122,15 +122,27 @@ namespace Chess
         private static void GameLoop()
         {
             Graphics.Display();
+            Console.WriteLine(LastTurnResult);
+
             var ActivePlayer = PlayerOne.Side == PlayerTurn ? PlayerOne : PlayerTwo;
+
             Console.WriteLine($"{ActivePlayer.Name}, It is your move.");
             var turnCommand = Console.ReadLine();
-            TurnCommand command = TurnLogic.GetCommand(ActivePlayer, turnCommand);
+            var executeResult = "";
+            TurnCommand command = Turn.GetCommand(ActivePlayer, turnCommand);
             if (command != null)
-                TurnLogic.ExecuteCommand(command);
+            {
+                executeResult = Turn.ExecuteCommand(command);
+                Console.WriteLine(executeResult);
+                if (command.Type.Equals(TurnType.Move) && (!executeResult.ToLower().Contains("invalid") || executeResult != null))
+                {
+                    PlayerTurn = PlayerTurn.Equals(Side.White) ? Side.Black : Side.White;
+                }
+            }
             else
-                TurnLogic.ExecuteCommand(new TurnCommand() { });
-            PlayerTurn = PlayerTurn.Equals(Side.White) ? Side.Black : Side.White;
+            {
+                Turn.ExecuteCommand(new TurnCommand() { });
+            }
         }
 
         private static void LoadGame(string fileName)
