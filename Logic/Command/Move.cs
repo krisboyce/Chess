@@ -41,6 +41,7 @@ namespace Logic.Command
         public static CommandResult Action(TurnCommand command)
         {
             var commandResult = new CommandResult();
+            var pm = new PeiceMovement();
             var coords = ParseMove(command.Arguments[0], command.Arguments[1]);
 
             if (coords == null)
@@ -58,17 +59,7 @@ namespace Logic.Command
                 return commandResult;
             }
 
-            if (!PeiceMovement.CanMove(peice, coords[2] - coords[0], coords[3] - coords[1]))
-            {
-                commandResult.Success = false;
-                commandResult.ErrorMessage = "Invalid move. That move is illegal.";
-                return commandResult;
-            }
-
-            peice = board.MovePeice(coords[0], coords[1], coords[2], coords[3]);
-            commandResult.Success = true;
-            commandResult.ResultMessage = $"Moved {peice.Type} to {command.Arguments[1]}";
-            return commandResult;
+            return pm.Move(peice, coords[2] - coords[0], coords[3] - coords[1]);
         }
     }
 }

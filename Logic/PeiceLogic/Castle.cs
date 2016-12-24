@@ -59,13 +59,19 @@ namespace Logic.PeiceLogic
                 {
                     return King.CanMove(king, -3, 0);
                 }
-                else if(dX == -3)
+
+                if(dX == -3)
                 {
                     return King.CanMove(king, 2, 0);
                 }
             }
 
             return false;
+        }
+
+        public static CommandResult Move(Peice peice, int dX, int dY)
+        {
+            return CommandResult.GetSuccess("");
         }
     }
 }

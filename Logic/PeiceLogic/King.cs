@@ -24,7 +24,7 @@ namespace Logic.PeiceLogic
                 var cursor = peice.X;
                 while (cursor != peice.X + dX)
                 {
-                    if (Board.IsChecked(peice.Side.Equals(Side.White) ? Side.Black : Side.White, cursor, peice.Y))
+                    if (new PeiceMovement().IsChecked(peice.Side.Equals(Side.White) ? Side.Black : Side.White, cursor, peice.Y))
                         return false;
 
                     cursor += dir;
@@ -41,7 +41,12 @@ namespace Logic.PeiceLogic
             if (blockingPeice.Side.Equals(peice.Side))
                 return false;
 
-            return Board.IsChecked(peice.Side.Equals(Side.White) ? Side.Black : Side.White, peice.X+dX, peice.Y+dY);
+            return new PeiceMovement().IsChecked(peice.Side.Equals(Side.White) ? Side.Black : Side.White, peice.X+dX, peice.Y+dY);
+        }
+
+        public static CommandResult Move(Peice peice, int dX, int dY)
+        {
+            throw new NotImplementedException();
         }
     }
 }

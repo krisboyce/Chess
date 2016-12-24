@@ -123,11 +123,12 @@ namespace Logic.PeiceLogic
 
         public static CommandResult Move(Peice peice, int dX, int dY)
         {
-            var result = new CommandResult();
             var board = Board.GetInstance();
 
-            if (!CanMove(peice, dX, dY).Success)
-                return result;
+            var moveCheckResult = CanMove(peice, dX, dY);
+
+            if (!moveCheckResult.Success)
+                return moveCheckResult;
 
             if (dX != 0)
             {
@@ -138,7 +139,10 @@ namespace Logic.PeiceLogic
                 }
             }
 
-            return result;
+            board.MovePeice(peice.X, peice.Y, peice.X + dX, peice.Y + dY);
+            var xCoord = Letters.Coords[peice.X + dX];
+
+            return CommandResult.GetSuccess($"Moved ${peice.Type} to {xCoord + (peice.Y + dY)}");
         }
     }
 }

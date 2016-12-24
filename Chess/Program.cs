@@ -19,8 +19,8 @@ namespace Chess
         private static Player PlayerOne { get; set; }
         private static Player PlayerTwo { get; set; }
         private static Side PlayerTurn = Side.White;
-        private static string LastTurnResult = "";
-        static void Main(string[] args)
+
+        public static void Main()
         {
             Console.WriteLine("Welcome to Console Chess. Type help to begin.");
             while (InMenu)
@@ -121,12 +121,15 @@ namespace Chess
             Console.WriteLine($"Hello {PlayerOne.Name} and {PlayerTwo.Name}.");
             Console.WriteLine("Press any key to start the game.");
             Console.ReadKey();
+
+            var board = Board.GetInstance();
+
+            board.SetGrid(board.SetupPeices());
         }
 
         private static void GameLoop()
         {
             Graphics.Display();
-            Console.WriteLine(LastTurnResult);
 
             var ActivePlayer = PlayerOne.Side == PlayerTurn ? PlayerOne : PlayerTwo;
 
