@@ -22,19 +22,17 @@ namespace Logic.PeiceLogic
             }
 
 
-            result.Success = (peice.Side == board.Top && dY > 0) || (peice.Side == board.Bottom && dY < 0);
-
-            if (!result.Success)
-            {
-                result.ErrorMessage = "Peice can not move in that direction.";
-                return result;
-            }
-
+            if(!(peice.Side == board.Top && dY > 0 || peice.Side == board.Bottom && dY < 0))
+                    return CommandResult.GetFail("Can not move in that direction.");
 
             if (dX == 0)
             {
                 if (dY%2 == 0)
                 {
+                    if (peice.HasMoved)
+                    {
+                        return CommandResult.GetFail("Double move is only valid as first move.");
+                    }
                     var blockPeice = board.GetPeice(peice.X, peice.Y + dY) ?? board.GetPeice(peice.X, peice.Y + dY/2);
                     if (blockPeice == null)
                     {
@@ -42,7 +40,6 @@ namespace Logic.PeiceLogic
                         result.ResultMessage = "Peice is not blocked.";
                         return result;
                     }
-
                 }
                 else
                 {
@@ -78,7 +75,8 @@ namespace Logic.PeiceLogic
                 result.ResultMessage = "Can only en passant a pawn.";
                 return result;
             }
-            else if(enPassantPeice != null)
+
+            if (enPassantPeice != null)
             {
                 if (peice.Side.Equals(enPassantPeice.Side))
                 {
@@ -102,20 +100,15 @@ namespace Logic.PeiceLogic
                     result.ErrorMessage = "Capture peice must have moved";
                     return result;
                 }
-                    
-            }
+                if (enPassantPeice.Side == board.Top && enPassantPeice.Y == 3)
+                {
+                    return result;
+                }
 
-           
-
-           
-
-            if (enPassantPeice.Side == board.Top && enPassantPeice.Y == 3)
-            {
-                return result;
-            }
-            else if (enPassantPeice.Side == board.Bottom && enPassantPeice.Y == 4)
-            {
-                return result;
+                if (enPassantPeice.Side == board.Bottom && enPassantPeice.Y == 4)
+                {
+                    return result;
+                }
             }
 
             return result;
@@ -142,7 +135,7 @@ namespace Logic.PeiceLogic
             board.MovePeice(peice.X, peice.Y, peice.X + dX, peice.Y + dY);
             var xCoord = Letters.Coords[peice.X + dX];
 
-            return CommandResult.GetSuccess($"Moved ${peice.Type} to {xCoord + (peice.Y + dY)}");
+            return CommandResult.GetSuccess($"Moved {peice.Type} to {xCoord}{peice.Y + dY}");
         }
     }
 }

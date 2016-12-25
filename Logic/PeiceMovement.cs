@@ -33,7 +33,7 @@ namespace Logic
             }
 
             var king = Board.GetInstance().GetKing(peice.Side);
-            if(IsChecked(king.Side, king.X, king.Y))
+            if(IsChecked(king.Side.Equals(Side.White) ? Side.Black : Side.White, king.X, king.Y))
             {
                 return null;
             }
@@ -53,7 +53,10 @@ namespace Logic
             //check diagonals
             var checkDiagonal = Task.Factory.StartNew<bool>(() => CheckDiagonal(oSide, xPos, yPos));
 
-            return checkKnight.Result || checkDiagonal.Result;
+            //check orthagonal
+            var checkOrthagonal = Task.Factory.StartNew<bool>(() => CheckOrthagonal(oSide, xPos, yPos));
+
+            return checkKnight.Result || checkDiagonal.Result || checkOrthagonal.Result;
         }
 
         private bool CheckKnight(Side opponentSide, int x, int y)
@@ -70,8 +73,8 @@ namespace Logic
             knightMoves[6] = new Tuple<int, int>(x + -2, y + 1);
             knightMoves[7] = new Tuple<int, int>(x + -2, y + -1);
 
-            return knightMoves.Select(move => board.GetPeice(move.Item1, move.Item2)).Any(
-                possibleKnight => !possibleKnight.Side.Equals(opponentSide)
+            return knightMoves.Where(move => (move.Item1 > 0 && move.Item2 > 0 && move.Item1 < 8 && move.Item2 < 8)).Select(move => board.GetPeice(move.Item1, move.Item2)).Any(
+                possibleKnight => possibleKnight != null && !possibleKnight.Side.Equals(opponentSide)
                                   && possibleKnight.Type.Equals(PeiceType.Knight));
         }
 
@@ -119,7 +122,7 @@ namespace Logic
                     movedY += yDir;
                     movedX += xDir;
 
-                    if (cursorY >= 0 && cursorX >= 0 && cursorY < 8 && cursorX < 8)
+                    if (cursorY < 0 || cursorX < 0 || cursorY >= 8 || cursorX >= 8)
                         continue;
 
                     var cursorPeice = board.GetPeice(cursorX, cursorY);
@@ -193,7 +196,7 @@ namespace Logic
                     movedY += yDir;
                     movedX += xDir;
 
-                    if (cursorY >= 0 && cursorX >= 0 && cursorY < 8 && cursorX < 8)
+                    if (cursorY < 0 || cursorX < 0 || cursorY >= 8 || cursorX >= 8)
                         continue;
 
                     var cursorPeice = board.GetPeice(cursorX, cursorY);

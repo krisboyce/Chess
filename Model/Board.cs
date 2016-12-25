@@ -133,6 +133,9 @@ namespace Model
                 for(var x = 0; x<_grid[y].Length; x++)
                 {
                     var peice = GetPeice(x, y);
+                    if (peice == null)
+                        continue;
+
                     if (peice.Side.Equals(side) && peice.Type.Equals(PeiceType.King))
                         return peice;
                 }

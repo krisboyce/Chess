@@ -45,12 +45,14 @@ namespace Logic.Command
             var coords = ParseMove(command.Arguments[0], command.Arguments[1]);
 
             if (coords == null)
+            {
                 commandResult.Success = false;
                 commandResult.ErrorMessage = "Invalid move. Malformed Coordinates.";
+                return commandResult;
+            }
 
             var board = Board.GetInstance();
             var peice = board.GetPeice(coords[0], coords[1]);
-
 
             if (!peice.Side.Equals(command.Player.Side))
             {
