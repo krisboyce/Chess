@@ -1,31 +1,32 @@
 ﻿using Model;
+using Model.interfaces;
 
 namespace Test.helpers
 {
     public class BoardHelper
     {
-        public static Peice[][] GetEmptyBoard()
+        public static IPeice[][] GetEmptyBoard()
         {
             return new []
             {
-                new Peice[8],
-                new Peice[8],
-                new Peice[8],
-                new Peice[8],
-                new Peice[8],
-                new Peice[8],
-                new Peice[8],
-                new Peice[8]
+                new IPeice[8],
+                new IPeice[8],
+                new IPeice[8],
+                new IPeice[8],
+                new IPeice[8],
+                new IPeice[8],
+                new IPeice[8],
+                new IPeice[8]
             };
         }
-        public static Peice[] GetEmptyRow()
+        public static IPeice[] GetEmptyRow()
         {
-            return new Peice[8];
+            return new IPeice[8];
         }
 
-        public static Peice[] GetSinglePeiceRow(Peice peice, int y)
+        public static IPeice[] GetSinglePeiceRow(Peice peice, int y)
         {
-            var row = new Peice[8];
+            var row = new IPeice[8];
             row[y] = peice;
             return row;
         }

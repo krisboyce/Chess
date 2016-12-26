@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Model.Constants;
+using Model.interfaces;
 
 namespace Model
 {
-    public class Peice
+    public class Peice : IPeice
     {
         public PeiceType Type { get; set; }
         public Side Side { get; set; }
@@ -20,12 +21,13 @@ namespace Model
 
         public Peice(Peice peice)
         {
-            this.X = peice.X;
-            this.Y = peice.Y;
-            this.HasMoved = peice.HasMoved;
-            this.IsChecked = peice.IsChecked;
-            this.Side = peice.Side;
-            this.Type = peice.Type;
+            if (peice == null) return;
+            X = peice.X;
+            Y = peice.Y;
+            HasMoved = peice.HasMoved;
+            IsChecked = peice.IsChecked;
+            Side = peice.Side;
+            Type = peice.Type;
         }
     }
 }

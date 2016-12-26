@@ -46,10 +46,16 @@
     <Compile Include="Constants\HelpStrings.cs" />
     <Compile Include="Constants\PeiceProperties.cs" />
     <Compile Include="Constants\TurnProperties.cs" />
+    <Compile Include="interfaces\IBoard.cs" />
+    <Compile Include="interfaces\ICommand.cs" />
+    <Compile Include="interfaces\IPeice.cs" />
+    <Compile Include="interfaces\IPlayer.cs" />
+    <Compile Include="interfaces\IResult.cs" />
+    <Compile Include="MenuCommand.cs" />
     <Compile Include="Peice.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TurnCommand.cs" />
+    <Compile Include="GameCommand.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

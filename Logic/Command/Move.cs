@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Model;
 using Model.Constants;
+using Model.interfaces;
 
 namespace Logic.Command
 {
@@ -38,30 +39,34 @@ namespace Logic.Command
 
             return coords;
         }
-        public static CommandResult Action(TurnCommand command)
+        public static CommandResult Action(GameCommand command)
         {
+            if(command == null)
+                return CommandResult.GetFail("Command is null.");
+
             var commandResult = new CommandResult();
+            var args = command.Arguments.ToArray();
             var pm = new PeiceMovement();
-            var coords = ParseMove(command.Arguments[0], command.Arguments[1]);
+            var coords = ParseMove(args[0], args[1]);
 
             if (coords == null)
             {
                 commandResult.Success = false;
-                commandResult.ErrorMessage = "Invalid move. Malformed Coordinates.";
+                commandResult.Message = "Invalid move. Malformed Coordinates.";
                 return commandResult;
             }
 
-            var board = Board.GetInstance();
+            var board = command.Board;
             var peice = board.GetPeice(coords[0], coords[1]);
 
             if (!peice.Side.Equals(command.Player.Side))
             {
                 commandResult.Success = false;
-                commandResult.ErrorMessage = "Invalid move. You can only move your peices.";
+                commandResult.Message = "Invalid move. You can only move your peices.";
                 return commandResult;
             }
 
-            return pm.Move(peice, coords[2] - coords[0], coords[3] - coords[1]);
+            return pm.Move(board, peice, coords[2] - coords[0], coords[3] - coords[1]);
         }
     }
 }

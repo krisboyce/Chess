@@ -1,9 +1,10 @@
-﻿namespace Model
+﻿using Model.interfaces;
+
+namespace Model
 {
-    public class CommandResult
+    public class CommandResult : IResult
     {
-        public string ResultMessage { get; set; }
-        public string ErrorMessage { get; set; }
+        public string Message { get; set; }
         public bool Success { get; set; }
 
         public static CommandResult GetSuccess(string message)
@@ -11,7 +12,7 @@
             return new CommandResult()
             {
                 Success = true,
-                ResultMessage = message
+                Message = message
             };
         }
 
@@ -20,7 +21,7 @@
             return new CommandResult()
             {
                 Success = false,
-                ErrorMessage = message
+                Message = message
             };
         }
     }

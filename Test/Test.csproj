@@ -59,8 +59,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CastleLogicTests.cs" />
     <Compile Include="helpers\BoardHelper.cs" />
-    <Compile Include="PeiceLogicTests.cs" />
+    <Compile Include="PawnLogicTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

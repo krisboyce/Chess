@@ -5,64 +5,67 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Model.interfaces;
 
 namespace Logic
 {
     public class PeiceMovement
     {
-        public CommandResult Move(Peice peice, int dX, int dY)
+        public CommandResult Move(IBoard board, IPeice ipeice, int dX, int dY)
         {
             var result = new CommandResult();
-            switch (peice.Type)
+            var peice = ipeice as Peice;
+            if (peice != null)
             {
-                case PeiceType.Pawn:
-                    result = Pawn.Move(peice, dX, dY);
-                    break;
-                case PeiceType.Castle:
-                    result = Castle.Move(peice, dX, dY);
-                    break;
-                case PeiceType.Knight:
-                    break;
-                case PeiceType.Bishop:
-                    break;
-                case PeiceType.Queen:
-                    break;
-                case PeiceType.King:
-                    result = King.Move(peice, dX, dY);
-                    break;
-            }
+                switch (peice.Type)
+                {
+                    case PeiceType.Pawn:
+                        result = Pawn.Move(board, peice, dX, dY);
+                        break;
+                    case PeiceType.Castle:
+                        result = Castle.Move(peice, dX, dY);
+                        break;
+                    case PeiceType.Knight:
+                        break;
+                    case PeiceType.Bishop:
+                        break;
+                    case PeiceType.Queen:
+                        break;
+                    case PeiceType.King:
+                        result = King.Move(peice, dX, dY);
+                        break;
+                }
 
-            var king = Board.GetInstance().GetKing(peice.Side);
-            if(IsChecked(king.Side.Equals(Side.White) ? Side.Black : Side.White, king.X, king.Y))
-            {
-                return null;
+                var king = board.GetKing(peice.Side);
+                if(IsChecked(board, king.Side.Equals(Side.White) ? Side.Black : Side.White, king.X, king.Y))
+                {
+                    return CommandResult.GetFail("King is in check.");
+                }
             }
 
             return result;
         }
 
-        public bool IsChecked(Side opponentSide, int x, int y)
+        public bool IsChecked(IBoard board, Side opponentSide, int x, int y)
         {
             var oSide = opponentSide;
             var xPos = x;
             var yPos = y;
 
             //Check knight
-            var checkKnight = Task.Factory.StartNew<bool>(() => CheckKnight(oSide, xPos, yPos));
+            var checkKnight = Task.Factory.StartNew<bool>(() => CheckKnight(board, oSide, xPos, yPos));
 
             //check diagonals
-            var checkDiagonal = Task.Factory.StartNew<bool>(() => CheckDiagonal(oSide, xPos, yPos));
+            var checkDiagonal = Task.Factory.StartNew<bool>(() => CheckDiagonal(board, oSide, xPos, yPos));
 
             //check orthagonal
-            var checkOrthagonal = Task.Factory.StartNew<bool>(() => CheckOrthagonal(oSide, xPos, yPos));
+            var checkOrthagonal = Task.Factory.StartNew<bool>(() => CheckOrthagonal(board, oSide, xPos, yPos));
 
             return checkKnight.Result || checkDiagonal.Result || checkOrthagonal.Result;
         }
 
-        private bool CheckKnight(Side opponentSide, int x, int y)
+        private bool CheckKnight(IBoard board, Side opponentSide, int x, int y)
         {
-            var board = Board.GetInstance();
-
             var knightMoves = new Tuple<int, int>[8];
             knightMoves[0] = new Tuple<int, int>(x + 1, y + 2);
             knightMoves[1] = new Tuple<int, int>(x + 1, y + -2);
@@ -78,9 +81,8 @@ namespace Logic
                                   && possibleKnight.Type.Equals(PeiceType.Knight));
         }
 
-        private bool CheckDiagonal(Side opponentSide, int x, int y)
+        private bool CheckDiagonal(IBoard board, Side opponentSide, int x, int y)
         {
-            var board = Board.GetInstance();
 
             var isChecked = false;
 
@@ -152,9 +154,8 @@ namespace Logic
             return isChecked;
         }
 
-        private bool CheckOrthagonal(Side opponentSide, int x, int y)
+        private bool CheckOrthagonal(IBoard board, Side opponentSide, int x, int y)
         {
-            var board = Board.GetInstance();
 
             var isChecked = false;
 

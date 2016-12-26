@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Model;
 using Model.Constants;
+using Model.interfaces;
 
 namespace Logic.PeiceLogic
 {
     public static class King
     {
-        public static bool CanMove(Peice peice, int dX, int dY)
+        public static bool CanMove(IBoard board, IPeice peice, int dX, int dY)
         {
             if (Math.Abs(dX) > 1 || Math.Abs(dY) > 1)
             {
@@ -24,7 +25,7 @@ namespace Logic.PeiceLogic
                 var cursor = peice.X;
                 while (cursor != peice.X + dX)
                 {
-                    if (new PeiceMovement().IsChecked(peice.Side.Equals(Side.White) ? Side.Black : Side.White, cursor, peice.Y))
+                    if (new PeiceMovement().IsChecked(board, peice.Side.Equals(Side.White) ? Side.Black : Side.White, cursor, peice.Y))
                         return false;
 
                     cursor += dir;
@@ -34,14 +35,13 @@ namespace Logic.PeiceLogic
             {
                 return false;
             }
-            var board = Board.GetInstance();
 
             var blockingPeice = board.GetPeice(peice.X + dX, peice.Y + dY);
 
-            if (blockingPeice.Side.Equals(peice.Side))
+            if (blockingPeice.Side.Equals(peice.Side) && !(blockingPeice.Type.Equals(PeiceType.Castle) && !blockingPeice.HasMoved && !peice.HasMoved))
                 return false;
 
-            return new PeiceMovement().IsChecked(peice.Side.Equals(Side.White) ? Side.Black : Side.White, peice.X+dX, peice.Y+dY);
+            return !new PeiceMovement().IsChecked(board, peice.Side.Equals(Side.White) ? Side.Black : Side.White, peice.X+dX, peice.Y+dY);
         }
 
         public static CommandResult Move(Peice peice, int dX, int dY)

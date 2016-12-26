@@ -4,37 +4,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Model.interfaces;
 
 namespace Model
 {
-    public sealed class Board
+    public sealed class Board : IBoard
     {
-        private static Board _instance = new Board();
         private static readonly object Lock = new object();
-        private Peice[][] _grid;
-        public Side Top = Side.Black;
-        public Side Bottom = Side.White;
-        private List<Tuple<Peice, int, int>> MoveHistory = new List<Tuple<Peice, int, int>>();
+        private IPeice[][] _grid;
+        public Side Top { get; set; }
+        public Side Bottom { get; set; }
+        private List<Tuple<IPeice, IPeice>> MoveHistory = new List<Tuple<IPeice, IPeice>>();
 
-        private Board()
+        public void RecordMove(IPeice prevPeice, IPeice afterPeice)
         {
-            if (_instance != null)
-            {
-                throw new AccessViolationException();
-            }
+            MoveHistory.Add(new Tuple<IPeice, IPeice>(prevPeice, afterPeice));
         }
 
-        public void RecordMove(Peice peice, int x, int y)
+        public Tuple<IPeice, IPeice> GetLastMove()
         {
-            MoveHistory.Add(new Tuple<Peice, int, int>(peice, x, y));
+            return MoveHistory.LastOrDefault() ?? new Tuple<IPeice, IPeice>(null, null);
         }
 
-        public Tuple<Peice, int, int> GetLastMove()
-        {
-            return MoveHistory.Last();
-        }
-
-        public void SetGrid(Peice[][] grid)
+        public void SetGrid(IPeice[][] grid)
         {
             lock (Lock)
             {
@@ -44,10 +36,10 @@ namespace Model
 
         public Peice[][] SetupPeices()
         {
-            var _tempGrid = new Peice[8][];
+            var tempGrid = new Peice[8][];
             for (var x = 0; x < 8; x++)
             {
-                _tempGrid[x] = new Peice[8];
+                tempGrid[x] = new Peice[8];
                 for (var y = 0; y < 8; y++)
                 {
                     var type = PeiceType.Pawn;
@@ -75,7 +67,7 @@ namespace Model
                                 break;
                         }
                     }
-                    _tempGrid[x][y] = new Peice()
+                    tempGrid[x][y] = new Peice()
                     {
                         Type = type,
                         X = x,
@@ -84,28 +76,19 @@ namespace Model
                     };
                     if (y > 1 && y < 6)
                     {
-                        _tempGrid[x][y] = null;
+                        tempGrid[x][y] = null;
                     }
                 }
             }
-            return _tempGrid;
-        }
-        public static Board GetInstance()
-        {
-            return _instance;
+            return tempGrid;
         }
 
-        public Peice GetPeice(int x, int y)
+        public IPeice GetPeice(int x, int y)
         {
-            Peice peice;
+            IPeice peice;
             lock (Lock)
             {
-                peice = _grid[x][y];
-                if (peice != null)
-                {
-                    peice.X = x;
-                    peice.Y = y;
-                }
+                peice = _grid[x][y] as Peice;
             }
             return peice;
         }
@@ -116,17 +99,21 @@ namespace Model
         }
         public void MovePeice(int x1, int y1, int x2, int y2)
         {
-            var peice = GetPeice(x1, y1);
+            var peice = GetPeice(x1, y1) as Peice;
             lock (Lock)
             {
-                _grid[x2][y2] = peice;
-                _grid[x2][y2].HasMoved = true;
+                _grid[x2][y2] = peice == null ? null : new Peice(peice)
+                {
+                    X = x2,
+                    Y = y2,
+                    HasMoved = true
+                };
                 _grid[x1][y1] = null;
-                RecordMove(peice, x2, y2);
+                RecordMove(peice, _grid[x2][y2]);
             }
         }
 
-        public Peice GetKing(Side side)
+        public IPeice GetKing(Side side)
         {
             for(var y = 0; y<_grid.Length; y++)
             {

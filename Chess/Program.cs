@@ -14,22 +14,22 @@ namespace Chess
 {
     public class Program
     {
-        private static bool GameRunning = false;
-        private static bool InMenu = true;
+        private static bool _gameRunning;
+        private static bool _inMenu = true;
         private static Player PlayerOne { get; set; }
         private static Player PlayerTwo { get; set; }
-        private static Side PlayerTurn = Side.White;
-
+        private static Side _playerTurn = Side.White;
+        private static Board _board;
         public static void Main()
         {
             Console.WriteLine("Welcome to Console Chess. Type help to begin.");
-            while (InMenu)
+            while (_inMenu)
             {
                 var command = Console.ReadLine();
-                var gameCommand = Turn.GetCommand(null, command);
+                var gameCommand = Turn.GetMenuCommand(command);
                 if(gameCommand != null)
                 {
-                    if(gameCommand.Type.Equals(TurnType.Move) || gameCommand.Type.Equals(TurnType.Save))
+                    if(gameCommand.Type.Equals(CommandType.Move) || gameCommand.Type.Equals(CommandType.Save))
                     {
                         Console.WriteLine("Invalid Command. Type help for more options.");
                     }else
@@ -38,25 +38,25 @@ namespace Chess
 
                         if (!commandResult.Success)
                         {
-                            Console.WriteLine(commandResult.ErrorMessage);
+                            Console.WriteLine(commandResult.Message);
                             continue;
                         }
 
                         switch (gameCommand.Type)
                         {
-                            case TurnType.Play:
-                                InMenu = false;
-                                GameRunning = true;
-                                Console.WriteLine(commandResult.ResultMessage);
+                            case CommandType.Play:
+                                _inMenu = false;
+                                _gameRunning = true;
+                                Console.WriteLine(commandResult.Message);
                                 SetupPlayers();
                                 break;
-                            case TurnType.Quit:
-                                Console.WriteLine(commandResult.ResultMessage);
-                                InMenu = false;
+                            case CommandType.Quit:
+                                Console.WriteLine(commandResult.Message);
+                                _inMenu = false;
                                 break;
-                            case TurnType.Load:
-                                InMenu = false;
-                                LoadGame(Turn.ExecuteCommand(gameCommand).ResultMessage);
+                            case CommandType.Load:
+                                _inMenu = false;
+                                LoadGame(Turn.ExecuteCommand(gameCommand).Message);
                                 break;
                         }
                     }
@@ -68,7 +68,7 @@ namespace Chess
 
             }
             Console.Clear();
-            while (GameRunning)
+            while (_gameRunning)
             {
                 GameLoop();
             }
@@ -122,34 +122,38 @@ namespace Chess
             Console.WriteLine("Press any key to start the game.");
             Console.ReadKey();
 
-            var board = Board.GetInstance();
+            _board = new Board()
+            {
+                Top = PlayerTwo.Side,
+                Bottom = PlayerOne.Side
+            };
 
-            board.SetGrid(board.SetupPeices());
+            _board.SetGrid(_board.SetupPeices());
         }
 
         private static void GameLoop()
         {
-            Graphics.Display();
+            Graphics.Display(_board);
 
-            var ActivePlayer = PlayerOne.Side == PlayerTurn ? PlayerOne : PlayerTwo;
+            var ActivePlayer = PlayerOne.Side == _playerTurn ? PlayerOne : PlayerTwo;
 
             Console.WriteLine($"{ActivePlayer.Name}, It is your move.");
             var turnCommand = Console.ReadLine();
             
-            TurnCommand command = Turn.GetCommand(ActivePlayer, turnCommand);
+            GameCommand command = Turn.GetGameCommand(_board, ActivePlayer, turnCommand);
             if (command != null)
             {
                 var executeResult = Turn.ExecuteCommand(command);
-                Console.WriteLine(executeResult.Success ? executeResult.ResultMessage : executeResult.ErrorMessage);
+                Console.WriteLine(executeResult.Success ? executeResult.Message : executeResult.Message);
 
-                if (command.Type.Equals(TurnType.Move) && executeResult.Success)
+                if (command.Type.Equals(CommandType.Move) && executeResult.Success)
                 {
-                    PlayerTurn = PlayerTurn.Equals(Side.White) ? Side.Black : Side.White;
+                    _playerTurn = _playerTurn.Equals(Side.White) ? Side.Black : Side.White;
                 }
             }
             else
             {
-                Console.WriteLine(Help.Action().ResultMessage);
+                Console.WriteLine(Help.Action().Message);
             }
             Console.WriteLine("Press any key...");
             Console.ReadKey();

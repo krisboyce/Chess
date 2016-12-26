@@ -17,29 +17,29 @@ namespace Logic.Command
             {
                 case "help":
                 case "h":
-                    commandResult.ResultMessage = HelpStrings.HELP;
+                    commandResult.Message = HelpStrings.HELP;
                     break;
                 case "move":
                 case "m":
-                    commandResult.ResultMessage = HelpStrings.MOVE;
+                    commandResult.Message = HelpStrings.MOVE;
                     break;
                 case "quit":
                 case "q":
-                    commandResult.ResultMessage = HelpStrings.QUIT;
+                    commandResult.Message = HelpStrings.QUIT;
                     break;
                 case "play":
-                    commandResult.ResultMessage = HelpStrings.PLAY;
+                    commandResult.Message = HelpStrings.PLAY;
                     break;
                 case "save":
                 case "s":
-                    commandResult.ResultMessage = HelpStrings.SAVE;
+                    commandResult.Message = HelpStrings.SAVE;
                     break;
                 case "load":
                 case "l":
-                    commandResult.ResultMessage = HelpStrings.LOAD;
+                    commandResult.Message = HelpStrings.LOAD;
                     break;
                 default:
-                    commandResult.ResultMessage = HelpStrings.HELP;
+                    commandResult.Message = HelpStrings.HELP;
                     break;
             }
             return commandResult;

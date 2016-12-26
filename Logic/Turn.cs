@@ -6,104 +6,108 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Logic.Command;
+using Model.interfaces;
 
 namespace Logic
 {
     public static class Turn
     {
-        public static TurnCommand GetCommand(Player player, string commandString)
+        public static GameCommand GetGameCommand(Board board, Player player, string commandString)
         {
-            var command = ParseCommandString(commandString);
-            if (command == null)
-                return null;
-
-            command.Player = player;
+            var command = new GameCommand()
+            {
+                Player = player,
+                Board = board,
+                Type = GetCommandType(commandString),
+                Arguments = GetCommandArguments(commandString)
+            };
             return command;
         }
 
-        private static TurnCommand ParseCommandString(string commandString)
+        public static MenuCommand GetMenuCommand(string commandString)
         {
-            var command = new TurnCommand();
+            var command = new MenuCommand()
+            {
+                Arguments = GetCommandArguments(commandString)
+            };
+            return command;
+        }
+
+        private static List<string> GetCommandArguments(string commandString)
+        {
+            var commandComponents = commandString.Split(' ').ToList();
+            return commandComponents.Skip(1).ToList();
+        }
+
+        private static CommandType GetCommandType(string commandString)
+        {
             var commandComponents = commandString.Split(' ').ToList();
             switch (commandComponents.First().ToLower())
             {
                 case "help":
                 case "h":
-                    command.Type = TurnType.Help;
-                    break;
+                    return CommandType.Help;
                 case "move":
                 case "m":
-                    command.Type = TurnType.Move;
-                    break;
-                case "quit":
-                case "q":
-                    command.Type = TurnType.Quit;
-                    break;
+                    return CommandType.Move;
                 case "save":
                 case "s":
-                    command.Type = TurnType.Save;
-                    break;
+                    return CommandType.Save;
+                case "q":
+                    return CommandType.Quit;
                 case "load":
                 case "l":
-                    command.Type = TurnType.Load;
-                    break;
+                    return CommandType.Load;
                 case "play":
                 case "p":
-                    command.Type = TurnType.Play;
-                    break;
+                    return CommandType.Play;
                 default:
-                    return null;
+                    return CommandType.Help;
             }
-            command.PopulateArguments(commandComponents.Skip(1).ToList());
-            return command;
         }
-
-        private static void PopulateArguments(this TurnCommand command, List<string> args)
+        private static bool ValidateArguments(ICommand command)
         {
-            command.Arguments.AddRange(args);
-        }
-        private static bool ValidateArguments(this TurnCommand command)
-        {
+            var args = command.Arguments.ToList();
             switch (command.Type)
             {
-                case TurnType.Help:
-                    return command.Arguments.Count == 1 || command.Arguments.Count == 0;
-                case TurnType.Move:
-                    return command.Arguments.Count > 1;
-                case TurnType.Play:
-                    return command.Arguments.Count == 0;
-                case TurnType.Quit:
-                    return command.Arguments.Count == 0;
-                case TurnType.Save:
-                    return command.Arguments.Count == 1;
-                case TurnType.Load:
-                    return command.Arguments.Count == 1;
+                case CommandType.Help:
+                    return args.Count == 1 || args.Count == 0;
+                case CommandType.Move:
+                    return args.Count > 1;
+                case CommandType.Play:
+                    return args.Count == 0;
+                case CommandType.Quit:
+                    return args.Count == 0;
+                case CommandType.Save:
+                    return args.Count == 1;
+                case CommandType.Load:
+                    return args.Count == 1;
                 default:
                     return false;
             }
         }
 
-        public static CommandResult ExecuteCommand(TurnCommand command)
+        public static CommandResult ExecuteCommand(ICommand command)
         {
-            if (!command.ValidateArguments())
+            if (!ValidateArguments(command))
                 return new CommandResult
                 {
                     Success = false,
-                    ErrorMessage =
+                    Message =
                         "Invalid arguments for command: " + command.Type + "\n" +
                         Help.Action(command.Type.ToString())
                 };
 
             switch (command.Type)
             {
-                case TurnType.Help:
+                case CommandType.Help:
                     return Help.Action();
-                case TurnType.Play:
-                    return new CommandResult() {Success = true, ResultMessage = "Beginning Game..."};
-                case TurnType.Quit:
-                    return new CommandResult() {Success = true, ResultMessage = "Quitting Game..."};
-                case TurnType.Move:
-                    return Move.Action(command);
+                case CommandType.Play:
+                    return new CommandResult() {Success = true, Message = "Beginning Game..."};
+                case CommandType.Quit:
+                    return new CommandResult() {Success = true, Message = "Quitting Game..."};
+                case CommandType.Move:
+                    return Move.Action(command as GameCommand);
                 default:
                     return Help.Action();
             }

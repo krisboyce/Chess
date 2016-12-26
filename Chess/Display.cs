@@ -17,13 +17,12 @@ namespace Chess
         private static ConsoleColor BorderColor = ConsoleColor.DarkGray;
 
         private static string _edge =   "|---------------------------------------|";
-        public static void Display()
+        public static void Display(Board board)
         {
             Console.Clear();
             Console.ForegroundColor = BorderColor;
             Console.WriteLine(_edge);
             var tileColor = WhiteTileColor;
-            var board = Board.GetInstance();
             for(var y = 0; y<8; y++)
             {
                 Console.WriteLine();

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Model.Constants
 {
-    public enum TurnType
+    public enum CommandType
     {
         Help,
         Quit,

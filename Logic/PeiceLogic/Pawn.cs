@@ -5,19 +5,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Model.interfaces;
 
 namespace Logic.PeiceLogic
 {
     public static class Pawn
     {
-        public static CommandResult CanMove(Peice peice, int dX, int dY) {
+        public static CommandResult CanMove(IBoard board, IPeice peice, int dX, int dY) {
 
             var result = new CommandResult();
-            var board = Board.GetInstance();
 
             if (peice.Type != PeiceType.Pawn)
             {
-                result.ErrorMessage = "Peice is not a pawn";
+                result.Message = "Peice is not a pawn";
                 return result;
             }
 
@@ -37,7 +37,7 @@ namespace Logic.PeiceLogic
                     if (blockPeice == null)
                     {
                         result.Success = true;
-                        result.ResultMessage = "Peice is not blocked.";
+                        result.Message = "Peice is not blocked.";
                         return result;
                     }
                 }
@@ -47,7 +47,7 @@ namespace Logic.PeiceLogic
                     if (blockPeice == null)
                     {
                         result.Success = true;
-                        result.ResultMessage = "Peice is not blocked.";
+                        result.Message = "Peice is not blocked.";
                         return result;
                     }
                 }
@@ -61,18 +61,18 @@ namespace Logic.PeiceLogic
                 if (capturePeice.Side.Equals(peice.Side))
                 {
                     result.Success = false;
-                    result.ErrorMessage = "Can't capture owned peice.";
+                    result.Message = "Can't capture owned peice.";
                 }
 
                 result.Success = true;
-                result.ResultMessage = "Can capture peice.";
+                result.Message = "Can capture peice.";
                 return result;
             }
 
             if (enPassantPeice != null && !enPassantPeice.Type.Equals(PeiceType.Pawn))
             {
                 result.Success = false;
-                result.ResultMessage = "Can only en passant a pawn.";
+                result.Message = "Can only en passant a pawn.";
                 return result;
             }
 
@@ -81,44 +81,41 @@ namespace Logic.PeiceLogic
                 if (peice.Side.Equals(enPassantPeice.Side))
                 {
                     result.Success = false;
-                    result.ErrorMessage = "Can not capture own peice.";
+                    result.Message = "Can not capture own peice.";
                     return result;
                 }
 
                 if (!enPassantPeice.HasMoved)
                 {
-                    var lastMove = board.GetLastMove();
-                    if (lastMove.Item1.Type.Equals(PeiceType.Pawn))
-                    {
-                        if (lastMove.Item2 == enPassantPeice.X && (lastMove.Item3 - enPassantPeice.Y)%2 == 0)
-                        {
-
-                            return result;
-                        }
-                    }
                     result.Success = false;
-                    result.ErrorMessage = "Capture peice must have moved";
+                    result.Message = "Capture peice must have moved";
                     return result;
                 }
-                if (enPassantPeice.Side == board.Top && enPassantPeice.Y == 3)
+                if (enPassantPeice.Side == board.Top && enPassantPeice.Y == 3 || enPassantPeice.Side == board.Bottom && enPassantPeice.Y == 4)
                 {
-                    return result;
-                }
+                    var lastMove = board.GetLastMove();
+                    if (lastMove.Item1 != null && lastMove.Item1.Type.Equals(PeiceType.Pawn))
+                    {
+                        if (lastMove.Item2.X == enPassantPeice.X && (lastMove.Item2.Y - lastMove.Item1.Y) % 2 == 0)
+                        {
+                            return CommandResult.GetSuccess("Can capture en passant");
+                        }
 
-                if (enPassantPeice.Side == board.Bottom && enPassantPeice.Y == 4)
-                {
-                    return result;
+                        return CommandResult.GetFail("En passant must be done immediatly.");
+                    }
+                    else
+                    {
+                        return CommandResult.GetFail("En passant can not be the first move.");
+                    }
                 }
             }
 
-            return result;
+            return CommandResult.GetFail("Unrecognized pawn move.");
         }
 
-        public static CommandResult Move(Peice peice, int dX, int dY)
+        public static CommandResult Move(IBoard board, IPeice peice, int dX, int dY)
         {
-            var board = Board.GetInstance();
-
-            var moveCheckResult = CanMove(peice, dX, dY);
+            var moveCheckResult = CanMove(board, peice, dX, dY);
 
             if (!moveCheckResult.Success)
                 return moveCheckResult;
