@@ -22,7 +22,18 @@ namespace Logic.PeiceLogic
                 return false;
 
             if (dX == 0)
-                return true;
+                if (dY%2 == 0)
+                {
+                    var blockPeice = board.GetPeice(peice.X, peice.Y + dY) ?? board.GetPeice(peice.X, peice.Y + dY / 2);
+                    if (blockPeice == null)
+                        return true;
+                }
+                else
+                {
+                    var blockPeice = board.GetPeice(peice.X, peice.Y + dY);
+                    if (blockPeice == null)
+                        return true;
+                }
 
             var capturePeice = board.GetPeice(peice.X + dX, peice.Y + dY);
             var enPassantPeice = board.GetPeice(peice.X + dX, peice.Y);

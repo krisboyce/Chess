@@ -4,35 +4,45 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Model;
 
 namespace Logic.Command
 {
     public static class Help
     {
-        public static string Action(string command = "")
+        public static CommandResult Action(string command = "")
         {
+            var commandResult = new CommandResult();
             switch (command.ToLower())
             {
                 case "help":
                 case "h":
-                    return HelpStrings.HELP;
+                    commandResult.ResultMessage = HelpStrings.HELP;
+                    break;
                 case "move":
                 case "m":
-                    return HelpStrings.MOVE;
+                    commandResult.ResultMessage = HelpStrings.MOVE;
+                    break;
                 case "quit":
                 case "q":
-                    return HelpStrings.QUIT;
+                    commandResult.ResultMessage = HelpStrings.QUIT;
+                    break;
                 case "play":
-                    return HelpStrings.PLAY;
+                    commandResult.ResultMessage = HelpStrings.PLAY;
+                    break;
                 case "save":
                 case "s":
-                    return HelpStrings.SAVE;
+                    commandResult.ResultMessage = HelpStrings.SAVE;
+                    break;
                 case "load":
                 case "l":
-                    return HelpStrings.LOAD;
+                    commandResult.ResultMessage = HelpStrings.LOAD;
+                    break;
                 default:
-                    return HelpStrings.HELP;
+                    commandResult.ResultMessage = HelpStrings.HELP;
+                    break;
             }
+            return commandResult;
         }
     }
 }

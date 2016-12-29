@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Board.cs" />
+    <Compile Include="CommandResult.cs" />
     <Compile Include="Constants\BoardProperties.cs" />
     <Compile Include="Constants\HelpStrings.cs" />
     <Compile Include="Constants\PeiceProperties.cs" />

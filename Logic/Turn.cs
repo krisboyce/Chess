@@ -83,23 +83,26 @@ namespace Logic
             }
         }
 
-        public static string ExecuteCommand(TurnCommand command)
+        public static CommandResult ExecuteCommand(TurnCommand command)
         {
-            if(!command.ValidateArguments())
-                return "Invalid arguments for command: " + command.Type.ToString() + "\n" + Help.Action(command.Type.ToString());
+            if (!command.ValidateArguments())
+                return new CommandResult
+                {
+                    Success = false,
+                    ErrorMessage =
+                        "Invalid arguments for command: " + command.Type + "\n" +
+                        Help.Action(command.Type.ToString())
+                };
 
             switch (command.Type)
             {
                 case TurnType.Help:
                     return Help.Action();
                 case TurnType.Play:
-                    return "Beginning Game...";
+                    return new CommandResult() {Success = true, ResultMessage = "Beginning Game..."};
                 case TurnType.Quit:
-                    return "Quitting Game...";
+                    return new CommandResult() {Success = true, ResultMessage = "Quitting Game..."};
                 case TurnType.Move:
-                    var moveCoords = Move.ParseMove(command.Arguments[0], command.Arguments[1]);
-                    if (moveCoords == null)
-                        return "Invalid Move";
                     return Move.Action(command);
                 default:
                     return Help.Action();

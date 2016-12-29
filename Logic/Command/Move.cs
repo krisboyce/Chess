@@ -38,26 +38,37 @@ namespace Logic.Command
 
             return coords;
         }
-        public static string Action(TurnCommand command)
+        public static CommandResult Action(TurnCommand command)
         {
+            var commandResult = new CommandResult();
             var coords = ParseMove(command.Arguments[0], command.Arguments[1]);
 
             if (coords == null)
-                return "Invalid move. Malformed Coordinates.";
+                commandResult.Success = false;
+                commandResult.ErrorMessage = "Invalid move. Malformed Coordinates.";
 
             var board = Board.GetInstance();
             var peice = board.GetPeice(coords[0], coords[1]);
 
 
             if (!peice.Side.Equals(command.Player.Side))
-                return "Invalid move. You can only move your peices.";
+            {
+                commandResult.Success = false;
+                commandResult.ErrorMessage = "Invalid move. You can only move your peices.";
+                return commandResult;
+            }
 
             if (!PeiceMovement.CanMove(peice, coords[2] - coords[0], coords[3] - coords[1]))
-                return "Invalid move. That move is illegal.";
+            {
+                commandResult.Success = false;
+                commandResult.ErrorMessage = "Invalid move. That move is illegal.";
+                return commandResult;
+            }
 
             peice = board.MovePeice(coords[0], coords[1], coords[2], coords[3]);
-
-            return $"Moved {peice.Type} to {command.Arguments[1]}";
+            commandResult.Success = true;
+            commandResult.ResultMessage = $"Moved {peice.Type} to {command.Arguments[1]}";
+            return commandResult;
         }
     }
 }

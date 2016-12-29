@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Logic.Command;
 
 namespace Chess
 {
@@ -33,26 +34,29 @@ namespace Chess
                         Console.WriteLine("Invalid Command. Type help for more options.");
                     }else
                     {
-                        var cmdPrompt = Turn.ExecuteCommand(gameCommand);
-                        if (!gameCommand.Type.Equals(TurnType.Load))
-                            Console.WriteLine(cmdPrompt);
+                        var commandResult = Turn.ExecuteCommand(gameCommand);
 
-                        if (cmdPrompt.Contains("Invalid"))
+                        if (!commandResult.Success)
+                        {
+                            Console.WriteLine(commandResult.ErrorMessage);
                             continue;
+                        }
 
                         switch (gameCommand.Type)
                         {
                             case TurnType.Play:
                                 InMenu = false;
                                 GameRunning = true;
+                                Console.WriteLine(commandResult.ResultMessage);
                                 SetupPlayers();
                                 break;
                             case TurnType.Quit:
+                                Console.WriteLine(commandResult.ResultMessage);
                                 InMenu = false;
                                 break;
                             case TurnType.Load:
                                 InMenu = false;
-                                LoadGame(Turn.ExecuteCommand(gameCommand));
+                                LoadGame(Turn.ExecuteCommand(gameCommand).ResultMessage);
                                 break;
                         }
                     }
@@ -128,21 +132,24 @@ namespace Chess
 
             Console.WriteLine($"{ActivePlayer.Name}, It is your move.");
             var turnCommand = Console.ReadLine();
-            var executeResult = "";
+            
             TurnCommand command = Turn.GetCommand(ActivePlayer, turnCommand);
             if (command != null)
             {
-                executeResult = Turn.ExecuteCommand(command);
-                Console.WriteLine(executeResult);
-                if (command.Type.Equals(TurnType.Move) && (!executeResult.ToLower().Contains("invalid") || executeResult != null))
+                var executeResult = Turn.ExecuteCommand(command);
+                Console.WriteLine(executeResult.Success ? executeResult.ResultMessage : executeResult.ErrorMessage);
+
+                if (command.Type.Equals(TurnType.Move) && executeResult.Success)
                 {
                     PlayerTurn = PlayerTurn.Equals(Side.White) ? Side.Black : Side.White;
                 }
             }
             else
             {
-                Turn.ExecuteCommand(new TurnCommand() { });
+                Console.WriteLine(Help.Action().ResultMessage);
             }
+            Console.WriteLine("Press any key...");
+            Console.ReadKey();
         }
 
         private static void LoadGame(string fileName)
