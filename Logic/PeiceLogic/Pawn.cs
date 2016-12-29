@@ -53,6 +53,16 @@ namespace Logic.PeiceLogic
 
         public static Peice Move(Peice peice, int dX, int dY)
         {
+            var board = Board.GetInstance();
+            if (dX != 0)
+            {
+                var enPassantPeice = board.GetPeice(peice.X + dX, peice.Y);
+                if (enPassantPeice != null)
+                {
+                    board.CapturePeice(enPassantPeice.X, enPassantPeice.Y);
+                }
+            }
+
             return peice;
         }
     }

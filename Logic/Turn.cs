@@ -100,8 +100,7 @@ namespace Logic
                     var moveCoords = Move.ParseMove(command.Arguments[0], command.Arguments[1]);
                     if (moveCoords == null)
                         return "Invalid Move";
-
-                    return Move.Action(moveCoords[0], moveCoords[1], moveCoords[2], moveCoords[3]);
+                    return Move.Action(command);
                 default:
                     return Help.Action();
             }
