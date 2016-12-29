@@ -43,6 +43,7 @@
     <Compile Include="Command\Help.cs" />
     <Compile Include="Command\Move.cs" />
     <Compile Include="PeiceLogic\Castle.cs" />
+    <Compile Include="PeiceLogic\King.cs" />
     <Compile Include="PeiceMovement.cs" />
     <Compile Include="PeiceLogic\Pawn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

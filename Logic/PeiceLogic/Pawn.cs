@@ -10,61 +10,125 @@ namespace Logic.PeiceLogic
 {
     public static class Pawn
     {
-        public static bool CanMove(Peice peice, int dX, int dY) {
+        public static CommandResult CanMove(Peice peice, int dX, int dY) {
+
+            var result = new CommandResult();
             var board = Board.GetInstance();
-            var validMove = false;
+
             if (peice.Type != PeiceType.Pawn)
-                return false;
+            {
+                result.ErrorMessage = "Peice is not a pawn";
+                return result;
+            }
 
-            validMove = (peice.Side == board.Top && dY > 0) || (peice.Side == board.Bottom && dY < 0);
 
-            if (!validMove)
-                return false;
+            result.Success = (peice.Side == board.Top && dY > 0) || (peice.Side == board.Bottom && dY < 0);
+
+            if (!result.Success)
+            {
+                result.ErrorMessage = "Peice can not move in that direction.";
+                return result;
+            }
+
 
             if (dX == 0)
+            {
                 if (dY%2 == 0)
                 {
-                    var blockPeice = board.GetPeice(peice.X, peice.Y + dY) ?? board.GetPeice(peice.X, peice.Y + dY / 2);
+                    var blockPeice = board.GetPeice(peice.X, peice.Y + dY) ?? board.GetPeice(peice.X, peice.Y + dY/2);
                     if (blockPeice == null)
-                        return true;
+                    {
+                        result.Success = true;
+                        result.ResultMessage = "Peice is not blocked.";
+                        return result;
+                    }
+
                 }
                 else
                 {
                     var blockPeice = board.GetPeice(peice.X, peice.Y + dY);
                     if (blockPeice == null)
-                        return true;
+                    {
+                        result.Success = true;
+                        result.ResultMessage = "Peice is not blocked.";
+                        return result;
+                    }
                 }
+            }
 
             var capturePeice = board.GetPeice(peice.X + dX, peice.Y + dY);
             var enPassantPeice = board.GetPeice(peice.X + dX, peice.Y);
 
             if (capturePeice != null)
-                return true;
+            {
+                if (capturePeice.Side.Equals(peice.Side))
+                {
+                    result.Success = false;
+                    result.ErrorMessage = "Can't capture owned peice.";
+                }
 
-            if (enPassantPeice?.Type != PeiceType.Pawn)
-                return false;
+                result.Success = true;
+                result.ResultMessage = "Can capture peice.";
+                return result;
+            }
 
-            if (peice.Type == enPassantPeice.Type)
-                return false;
+            if (enPassantPeice != null && !enPassantPeice.Type.Equals(PeiceType.Pawn))
+            {
+                result.Success = false;
+                result.ResultMessage = "Can only en passant a pawn.";
+                return result;
+            }
+            else if(enPassantPeice != null)
+            {
+                if (peice.Side.Equals(enPassantPeice.Side))
+                {
+                    result.Success = false;
+                    result.ErrorMessage = "Can not capture own peice.";
+                    return result;
+                }
 
-            if (!enPassantPeice.HasMoved)
-                return false;
+                if (!enPassantPeice.HasMoved)
+                {
+                    var lastMove = board.GetLastMove();
+                    if (lastMove.Item1.Type.Equals(PeiceType.Pawn))
+                    {
+                        if (lastMove.Item2 == enPassantPeice.X && (lastMove.Item3 - enPassantPeice.Y)%2 == 0)
+                        {
+
+                            return result;
+                        }
+                    }
+                    result.Success = false;
+                    result.ErrorMessage = "Capture peice must have moved";
+                    return result;
+                }
+                    
+            }
+
+           
+
+           
 
             if (enPassantPeice.Side == board.Top && enPassantPeice.Y == 3)
             {
-                return true;
+                return result;
             }
             else if (enPassantPeice.Side == board.Bottom && enPassantPeice.Y == 4)
             {
-                return true;
+                return result;
             }
 
-            return false;
+            return result;
         }
 
-        public static Peice Move(Peice peice, int dX, int dY)
+        public static CommandResult Move(Peice peice, int dX, int dY)
         {
+            var result = new CommandResult();
             var board = Board.GetInstance();
+
+            if (!CanMove(peice, dX, dY).Success)
+                return result;
+
             if (dX != 0)
             {
                 var enPassantPeice = board.GetPeice(peice.X + dX, peice.Y);
@@ -74,7 +138,7 @@ namespace Logic.PeiceLogic
                 }
             }
 
-            return peice;
+            return result;
         }
     }
 }

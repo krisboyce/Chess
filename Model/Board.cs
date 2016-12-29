@@ -14,13 +14,23 @@ namespace Model
         private static readonly object Lock = new object();
         private Peice[][] _grid;
         public Side Top = Side.Black;
-        public Side Bottom =Side.White;
+        public Side Bottom = Side.White;
+        private List<Tuple<Peice, int, int>> MoveHistory = new List<Tuple<Peice, int, int>>();
         private Board()
         {
             InitializeGrid();
             SetupPeices();
         }
 
+        public void RecordMove(Peice peice, int x, int y)
+        {
+            MoveHistory.Add(new Tuple<Peice, int, int>(peice, x, y));
+        }
+
+        public Tuple<Peice, int, int> GetLastMove()
+        {
+            return MoveHistory.Last();
+        }
         private void InitializeGrid()
         {
             _grid = new Peice[8][];
@@ -29,6 +39,7 @@ namespace Model
                 _grid[i] = new Peice[8];
             }
         }
+
 
         private void SetupPeices()
         {
@@ -132,6 +143,32 @@ namespace Model
                 }
             }
             throw new Exception("King not found");
+        }
+
+        public static bool IsChecked(Side opponentSide, int x, int y)
+        {
+            var board = Board.GetInstance();
+
+            //Check knight
+            var knightMoves = new Tuple<int, int>[8];
+            knightMoves[0] = new Tuple<int, int>(x + 1, y + 2);
+            knightMoves[1] = new Tuple<int, int>(x + 1, y + -2);
+            knightMoves[2] = new Tuple<int, int>(x + -1, y + 2);
+            knightMoves[3] = new Tuple<int, int>(x + -1, y + -2);
+            knightMoves[4] = new Tuple<int, int>(x + 2, y + 1);
+            knightMoves[5] = new Tuple<int, int>(x + 2, y + -1);
+            knightMoves[6] = new Tuple<int, int>(x + -2, y + 1);
+            knightMoves[7] = new Tuple<int, int>(x + -2, y + -1);
+
+            if (knightMoves.Select(move => board.GetPeice(move.Item1, move.Item2)).Any(
+                possibleKnight => !possibleKnight.Side.Equals(opponentSide)
+                                  && possibleKnight.Type.Equals(PeiceType.Knight)))
+                return true;
+
+            //check diagonals
+
+
+            return false;
         }
     }
 }
