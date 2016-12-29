@@ -11,7 +11,7 @@ namespace Logic
             switch (peice.Type)
             {
                 case PeiceType.Pawn:
-                    return Pawn.CanMove(peice, dX, dY);
+                    return Pawn.CanMove(peice, dX, dY).Success;
                 case PeiceType.Castle:
                     return Castle.CanMove(peice, dX, dY);
                 case PeiceType.Knight:
